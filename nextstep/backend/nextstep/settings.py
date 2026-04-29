@@ -1,12 +1,13 @@
+import os
 from pathlib import Path
 from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security
-SECRET_KEY = "dev-secret-key-replace-later"
-DEBUG = True
-ALLOWED_HOSTS = []
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-replace-later")
+DEBUG = os.environ.get("DEBUG", "False") == "True"
+ALLOWED_HOSTS = ["*"]
 
 # Installed apps
 INSTALLED_APPS = [
@@ -94,6 +95,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # 🌐 CORS (for React frontend)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://haley-nextstep.netlify.app/",
 ]
 
 # Django REST Framework
