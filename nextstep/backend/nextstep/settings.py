@@ -22,10 +22,7 @@ INSTALLED_APPS = [
     "corsheaders",
 
     "users",
-    "profiles",
     "jobs",
-    "swipes",
-    "matches",
 ]
 
 # Middleware
@@ -92,7 +89,7 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# 🌐 CORS (for React frontend)
+# CORS (for React frontend)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://haley-nextstep.netlify.app/",
