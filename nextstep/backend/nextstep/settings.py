@@ -92,7 +92,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # CORS (for React frontend)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://haley-nextstep.netlify.app/",
+    "https://haley-nextstep.netlify.app",
 ]
 
 # Django REST Framework
