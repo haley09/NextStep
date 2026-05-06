@@ -1,3 +1,5 @@
+from matplotlib.pyplot import title
+
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -85,3 +87,21 @@ class MessageView(APIView):
             content=content
         )
         return Response({"message": "Message sent"})
+    
+class CreateJobView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if request.user.role != "employer":
+            return Response({"error": "Only employers can create jobs"}, status=403)
+
+        Job.objects.create(
+            employer=request.user,
+            title=request.data.get("title"),
+            company=request.data.get("company"),
+            description=request.data.get("description"),
+            location=request.data.get("location")
+        )
+
+        serializer = JobSerializer(Job.objects.last())
+        return Response({"message": "Job created", "job": serializer.data})
