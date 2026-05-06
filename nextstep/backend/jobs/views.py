@@ -11,7 +11,6 @@ class JobListView(generics.ListAPIView):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
 
-
 class SwipeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -34,6 +33,13 @@ class SwipeView(APIView):
 
         return Response({"message": "Swipe saved"})
     
+class ResetSwipesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        Swipe.objects.filter(user=request.user).delete()
+        return Response({"message": "All swipes reset"})
+
 class LikedJobsView(APIView):
     permission_classes = [IsAuthenticated]
 

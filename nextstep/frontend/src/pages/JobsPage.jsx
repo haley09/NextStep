@@ -125,11 +125,17 @@ export default function JobsPage() {
             No more jobs
           </h2>
           <button
-            onClick={() => setCurrentIndex(0)}
-            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg"
-          >
-            Start Over
-          </button>
+  onClick={async () => {
+    try {
+      await api.delete("/jobs/swipes/reset/");
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+    }
+  }}
+>
+  Start Over
+</button>
         </div>
       )}
     </div>
