@@ -17,7 +17,7 @@ export default function Matches() {
           },
         });
 
-        setMatches(response.data);
+        setMatches(response);
         setMessage("");
       } catch (error) {
         console.error(error);

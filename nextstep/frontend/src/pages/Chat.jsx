@@ -20,7 +20,7 @@ export default function Chat() {
         },
       });
 
-      setMessages(response.data);
+      setMessages(response);
       setStatus("");
     } catch (error) {
       console.error("Chat load error:", error.response?.data || error.message);

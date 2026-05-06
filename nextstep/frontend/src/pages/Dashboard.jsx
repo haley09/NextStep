@@ -15,7 +15,7 @@ export default function Dashboard() {
           },
         });
 
-        setUser(response.data);
+        setUser(response);
       } catch (error) {
         console.error(error);
       }

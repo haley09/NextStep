@@ -9,12 +9,12 @@ export default function LikedJobs() {
         const token = localStorage.getItem("access");
 
         try {
-          const response = await api.get("/jobs/liked/", {
+          const data = await api.get("/jobs/liked/", {
             headers: {
               Authorization: `Bearer ${token}`
             }
           });
-          setJobs(response.data);
+          setJobs(data);
         } catch (error) {
           console.error(error);
         }

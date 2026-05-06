@@ -17,7 +17,7 @@ export default function Chats() {
           },
         });
 
-        setMatches(response.data);
+        setMatches(response);
         setMessage("");
       } catch (error) {
         console.error(error.response?.data || error.message);

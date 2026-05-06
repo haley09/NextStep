@@ -2,142 +2,121 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import api from "../services/api";
 
-export default function JobsPage() {
+function JobsPage() {
   const [jobs, setJobs] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [message, setMessage] = useState("Loading jobs...");
-  const [lastAction, setLastAction] = useState("");
-  const [direction, setDirection] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+
+  async function loadJobs() {
+    try {
+      setLoading(true);
+      setMessage("");
+
+      const data = await api.get("/jobs/");
+      setJobs(data);
+      setCurrentIndex(0);
+    } catch (error) {
+      console.error(error);
+      setMessage("Failed to load jobs.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await api.get("/jobs/");
-        setJobs(response.data);
-        setMessage("");
-      } catch (error) {
-        console.error(error.response?.data || error.message);
-        setMessage("Could not load jobs.");
-      }
-    };
-
-    fetchJobs();
+    loadJobs();
   }, []);
 
-  const handleSwipe = async (dir) => {
-    const currentJob = jobs[currentIndex];
-    const token = localStorage.getItem("access");
-    const liked = dir === "right";
+  async function handleSwipe(liked) {
+    const job = jobs[currentIndex];
 
-    if (!currentJob) return;
-
-    setDirection(dir);
+    if (!job) return;
 
     try {
-      await api.post(
-        "/jobs/swipe/",
-        {
-          job_id: currentJob.id,
-          liked: liked,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setTimeout(() => {
-      if (liked) {
-        setLastAction(`You liked ${currentJob.title}`);
-      } else {
-        setLastAction(`You passed on ${currentJob.title}`);
-      }
+      await api.post("/jobs/swipe/", {
+        job_id: job.id,
+        liked,
+      });
 
       setCurrentIndex((prevIndex) => prevIndex + 1);
-      setDirection(null);
-      }, 250); // Delay to allow animation to complete
     } catch (error) {
-      console.error(error.response?.data || error.message);
+      console.error(error);
+      setMessage("Failed to save swipe.");
     }
-  };
+  }
+
+  async function handleStartOver() {
+    try {
+      setMessage("");
+
+      await api.post("/jobs/reset-swipes/");
+
+      await loadJobs();
+    } catch (error) {
+      console.error(error);
+      setMessage("Failed to reset jobs.");
+    }
+  }
+
+  if (loading) {
+    return (
+      <main className="page">
+        <section className="card">
+          <h1>Discover Jobs</h1>
+          <p>Loading jobs...</p>
+        </section>
+      </main>
+    );
+  }
 
   const currentJob = jobs[currentIndex];
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
-      <h1 className="text-3xl font-bold mb-4">Discover Jobs</h1>
+    <main className="page">
+      <section className="card jobs-card">
+        <h1>Discover Jobs</h1>
 
-      {lastAction && <p className="mb-4 text-gray-600">{lastAction}</p>}
+        {message && <p className="error-message">{message}</p>}
 
-      {currentJob && (
-        <motion.div
-          key={currentJob.id}
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{
-            scale: 1,
-            opacity: 1,
-            x: direction === "right" ? 500 : direction === "left" ? -500 : 0,
-            rotate: direction === "right" ? 12 : direction === "left" ? -12 : 0,
-          }}
-          transition={{ type: "spring", stiffness: 200, damping: 20 }}
-          className="bg-white rounded-2xl shadow-lg p-6 max-w-md w-full"
-        >
-          <h2 className="text-2xl font-bold mb-2">
-            {currentJob.title}
-          </h2>
+        {!currentJob ? (
+          <div className="empty-state">
+            <h2>No more jobs</h2>
+            <p>You have reached the end of the current job list.</p>
 
-          <p className="text-gray-700">
-            <span className="font-semibold">Company:</span>{" "}
-            {currentJob.company}
-          </p>
-
-          <p className="text-gray-700">
-            <span className="font-semibold">Location:</span>{" "}
-            {currentJob.location}
-          </p>
-
-          <p className="mt-4 text-gray-600">
-            {currentJob.description}
-          </p>
-
-          <div className="flex justify-between mt-6">
-            <button
-              onClick={() => handleSwipe("left")}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 hover:scale-105 transition"
-            >
-              Pass
-            </button>
-
-            <button
-              onClick={() => handleSwipe("right")}
-              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 hover:scale-105 transition"
-            >
-              Interested
+            <button className="primary-button" type="button" onClick={handleStartOver}>
+              Start Over
             </button>
           </div>
-        </motion.div>
-      )}
+        ) : (
+          <div className="job-swipe-card">
+            <h2>{currentJob.title}</h2>
+            <h3>{currentJob.company}</h3>
+            <p>{currentJob.location}</p>
+            <p>{currentJob.description}</p>
 
-      {!currentJob && (
-        <div className="text-center">
-          <h2 className="text-xl font-semibold">
-            No more jobs
-          </h2>
-          <button
-  onClick={async () => {
-    try {
-      await api.delete("/jobs/swipes/reset/");
-      window.location.reload();
-    } catch (err) {
-      console.error(err);
-    }
-  }}
->
-  Start Over
-</button>
-        </div>
-      )}
-    </div>
+            <div className="swipe-actions">
+              <button
+                className="secondary-button"
+                type="button"
+                onClick={() => handleSwipe(false)}
+              >
+                Pass
+              </button>
+
+              <button
+                className="primary-button"
+                type="button"
+                onClick={() => handleSwipe(true)}
+              >
+                Like
+              </button>
+            </div>
+          </div>
+        )}
+      </section>
+    </main>
   );
 }
+
+export default JobsPage;
