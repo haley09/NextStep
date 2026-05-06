@@ -95,7 +95,7 @@ class CreateJobView(APIView):
         if request.user.role != "employer":
             return Response({"error": "Only employers can create jobs"}, status=403)
 
-        Job.objects.create(
+        job = Job.objects.create(
             employer=request.user,
             title=request.data.get("title"),
             company=request.data.get("company"),
@@ -103,5 +103,5 @@ class CreateJobView(APIView):
             location=request.data.get("location")
         )
 
-        serializer = JobSerializer(Job.objects.last())
-        return Response({"message": "Job created", "job": serializer.data})
+        serializer = JobSerializer(job)
+        return Response({"message": "Job created", "job": serializer.data}, status=201)
