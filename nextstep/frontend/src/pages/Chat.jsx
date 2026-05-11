@@ -58,33 +58,29 @@ export default function Chat() {
   }
 
   return (
-    <div>
-      <Link to="/chats" className="text-blue-600 hover:underline">
+    <section>
+      <Link to="/chats" className="text-link">
         ← {isEmployer ? "Back to conversations" : "Back to chats"}
       </Link>
 
-      <div className="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
-          <h1 className="text-2xl font-bold">
+      <div className="chat-container">
+        <div className="chat-header">
+          <h1 className="page-title">
             {isEmployer ? "Applicant Conversation" : "Conversation"}
           </h1>
 
-          <p className="text-gray-600 mt-1">
+          <p>
             {isEmployer
               ? "Coordinate next steps with this applicant."
               : "Coordinate next steps for this job match."}
           </p>
         </div>
 
-        {message && (
-          <p className="p-4 text-red-600 font-medium">
-            {message}
-          </p>
-        )}
+        {message && <p className="message-error">{message}</p>}
 
-        <div className="p-6 min-h-[360px] space-y-4">
+        <div className="chat-body">
           {messages.length === 0 ? (
-            <p className="text-gray-500">
+            <p>
               {isEmployer
                 ? "No conversation yet. Send a message to this applicant."
                 : "No messages yet. Send a message to start the conversation."}
@@ -96,16 +92,12 @@ export default function Chat() {
               return (
                 <div
                   key={item.id}
-                  className={`flex ${isMine ? "justify-end" : "justify-start"}`}
+                  className={`message-row ${isMine ? "mine" : "theirs"}`}
                 >
                   <div
-                    className={`max-w-sm rounded-xl px-4 py-3 ${
-                      isMine
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-100 text-gray-900"
-                    }`}
+                    className={`message-bubble ${isMine ? "mine" : "theirs"}`}
                   >
-                    <p className="text-xs opacity-75 mb-1">{item.sender}</p>
+                    <p className="message-sender">{item.sender}</p>
                     <p>{item.content}</p>
                   </div>
                 </div>
@@ -114,30 +106,19 @@ export default function Chat() {
           )}
         </div>
 
-        <form
-          onSubmit={handleSendMessage}
-          className="p-4 border-t border-gray-200 flex gap-3"
-        >
+        <form onSubmit={handleSendMessage} className="chat-form">
           <input
             type="text"
             placeholder={
-              isEmployer
-                ? "Message this applicant..."
-                : "Type a message..."
+              isEmployer ? "Message this applicant..." : "Type a message..."
             }
             value={content}
             onChange={(event) => setContent(event.target.value)}
-            className="flex-1 border border-gray-300 rounded-lg px-4 py-3"
           />
 
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-          >
-            Send
-          </button>
+          <button type="submit">Send</button>
         </form>
       </div>
-    </div>
+    </section>
   );
 }

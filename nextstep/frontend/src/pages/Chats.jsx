@@ -32,30 +32,24 @@ export default function Chats() {
   const isEmployer = user?.role === "employer";
 
   return (
-    <div>
-      <h1>{isEmployer ? "Conversations" : "Chats"}</h1>
+    <section className="card">
+      <h1 className="page-title">{isEmployer ? "Conversations" : "Chats"}</h1>
 
-      {message && <p>{message}</p>}
+      {message && <p className="error-message">{message}</p>}
 
       {items.length === 0 ? (
-        <p>
-          {isEmployer
-            ? "No conversations yet. Conversations will appear when applicants like your posted jobs."
-            : "No chats yet. Match with jobs to start conversations."}
-        </p>
+        <div className="empty-state">
+          <p>
+            {isEmployer
+              ? "No conversations yet. Conversations will appear when applicants like your posted jobs."
+              : "No chats yet. Match with jobs to start conversations."}
+          </p>
+        </div>
       ) : (
-        <div style={{ display: "grid", gap: "1rem" }}>
+        <div className="grid-list">
           {items.map((item) =>
             isEmployer ? (
-              <div
-                key={item.id}
-                style={{
-                  background: "white",
-                  padding: "1rem",
-                  borderRadius: "8px",
-                  boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-                }}
-              >
+              <article className="chat-card" key={item.id}>
                 <h2>{item.applicant_email}</h2>
 
                 <p>
@@ -70,20 +64,12 @@ export default function Chats() {
                   <strong>Location:</strong> {item.location}
                 </p>
 
-                <Link to={`/chat/${item.job_id}`}>
+                <Link className="text-link" to={`/chat/${item.job_id}`}>
                   Open Conversation
                 </Link>
-              </div>
+              </article>
             ) : (
-              <div
-                key={item.id}
-                style={{
-                  background: "white",
-                  padding: "1rem",
-                  borderRadius: "8px",
-                  boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-                }}
-              >
+              <article className="chat-card" key={item.id}>
                 <h2>{item.title}</h2>
 
                 <p>
@@ -94,14 +80,14 @@ export default function Chats() {
                   <strong>Location:</strong> {item.location}
                 </p>
 
-                <Link to={`/chat/${item.id}`}>
+                <Link className="text-link" to={`/chat/${item.id}`}>
                   Open Chat
                 </Link>
-              </div>
+              </article>
             )
           )}
         </div>
       )}
-    </div>
+    </section>
   );
 }

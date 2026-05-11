@@ -39,64 +39,37 @@ export default function App() {
   const isEmployer = user?.role === "employer";
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900">
-      <nav className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/dashboard" className="text-2xl font-bold text-blue-600">
+    <div className="app-shell">
+      <nav className="navbar">
+        <div className="navbar-inner">
+          <Link to="/dashboard" className="brand">
             NextStep
           </Link>
 
-          <div className="flex items-center gap-5 text-sm font-medium">
-            <Link className="hover:text-blue-600" to="/">
-              Login
-            </Link>
-
-            <Link className="hover:text-blue-600" to="/register">
-              Register
-            </Link>
-
-            <Link className="hover:text-blue-600" to="/dashboard">
-              Dashboard
-            </Link>
+          <div className="nav-links">
+            <Link to="/">Login</Link>
+            <Link to="/register">Register</Link>
+            <Link to="/dashboard">Dashboard</Link>
 
             {isEmployer ? (
               <>
-                <Link className="hover:text-blue-600" to="/liked">
-                  Jobs Posted
-                </Link>
-
-                <Link className="hover:text-blue-600" to="/matches">
-                  Applicants
-                </Link>
-
-                <Link className="hover:text-blue-600" to="/chats">
-                  Conversations
-                </Link>
+                <Link to="/liked">Jobs Posted</Link>
+                <Link to="/matches">Applicants</Link>
+                <Link to="/chats">Conversations</Link>
               </>
             ) : (
               <>
-                <Link className="hover:text-blue-600" to="/jobs">
-                  Jobs
-                </Link>
-
-                <Link className="hover:text-blue-600" to="/liked">
-                  Liked Jobs
-                </Link>
-
-                <Link className="hover:text-blue-600" to="/matches">
-                  Matches
-                </Link>
-
-                <Link className="hover:text-blue-600" to="/chats">
-                  Chats
-                </Link>
+                <Link to="/jobs">Jobs</Link>
+                <Link to="/liked">Liked Jobs</Link>
+                <Link to="/matches">Matches</Link>
+                <Link to="/chats">Chats</Link>
               </>
             )}
           </div>
         </div>
       </nav>
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="main-content">
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />

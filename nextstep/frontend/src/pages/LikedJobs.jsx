@@ -31,41 +31,38 @@ export default function LikedJobs() {
   const isEmployer = user?.role === "employer";
 
   return (
-    <div>
-      <h1>{isEmployer ? "Jobs Posted" : "Liked Jobs"}</h1>
+    <section className="card">
+      <h1 className="page-title">{isEmployer ? "Jobs Posted" : "Liked Jobs"}</h1>
 
-      {message && <p>{message}</p>}
+      {message && <p className="error-message">{message}</p>}
 
       {jobs.length === 0 ? (
-        <p>
-          {isEmployer
-            ? "You have not posted any jobs yet."
-            : "You have not liked any jobs yet."}
-        </p>
+        <div className="empty-state">
+          <p>
+            {isEmployer
+              ? "You have not posted any jobs yet."
+              : "You have not liked any jobs yet."}
+          </p>
+        </div>
       ) : (
-        <div style={{ display: "grid", gap: "1rem" }}>
+        <div className="grid-list">
           {jobs.map((job) => (
-            <div
-              key={job.id}
-              style={{
-                background: "white",
-                padding: "1rem",
-                borderRadius: "8px",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-              }}
-            >
+            <article className="job-card" key={job.id}>
               <h2>{job.title}</h2>
+
               <p>
                 <strong>Company:</strong> {job.company}
               </p>
+
               <p>
                 <strong>Location:</strong> {job.location}
               </p>
+
               <p>{job.description}</p>
-            </div>
+            </article>
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 }

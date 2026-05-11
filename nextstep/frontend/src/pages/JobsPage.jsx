@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import api from "../services/api";
 
 function JobsPage() {
@@ -51,7 +50,6 @@ function JobsPage() {
       setMessage("");
 
       await api.post("/jobs/reset-swipes/");
-
       await loadJobs();
     } catch (error) {
       console.error(error);
@@ -61,61 +59,71 @@ function JobsPage() {
 
   if (loading) {
     return (
-      <main className="page">
-        <section className="card">
-          <h1>Discover Jobs</h1>
-          <p>Loading jobs...</p>
-        </section>
-      </main>
+      <section className="card">
+        <h1 className="page-title">Discover Jobs</h1>
+        <p>Loading jobs...</p>
+      </section>
     );
   }
 
   const currentJob = jobs[currentIndex];
 
   return (
-    <main className="page">
-      <section className="card jobs-card">
-        <h1>Discover Jobs</h1>
+    <section className="card">
+      <h1 className="page-title">Discover Jobs</h1>
 
-        {message && <p className="error-message">{message}</p>}
+      {message && <p className="error-message">{message}</p>}
 
-        {!currentJob ? (
-          <div className="empty-state">
-            <h2>No more jobs</h2>
-            <p>You have reached the end of the current job list.</p>
+      {!currentJob ? (
+        <div className="empty-state">
+          <h2>No more jobs</h2>
+          <p>You have reached the end of the current job list.</p>
 
-            <button className="primary-button" type="button" onClick={handleStartOver}>
-              Start Over
+          <button className="primary-button" type="button" onClick={handleStartOver}>
+            Start Over
+          </button>
+        </div>
+      ) : (
+        <article className="job-card job-swipe-card">
+          <div className="job-card-header">
+            <div>
+              <h2>{currentJob.title}</h2>
+              <p>
+                <strong>{currentJob.company}</strong>
+              </p>
+            </div>
+
+            <span className="status-pill">
+              Job {currentIndex + 1} of {jobs.length}
+            </span>
+          </div>
+
+          <p>
+            <strong>Location:</strong> {currentJob.location}
+          </p>
+
+          <p>{currentJob.description}</p>
+
+          <div className="swipe-actions">
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => handleSwipe(false)}
+            >
+              Pass
+            </button>
+
+            <button
+              className="primary-button"
+              type="button"
+              onClick={() => handleSwipe(true)}
+            >
+              Like
             </button>
           </div>
-        ) : (
-          <div className="job-swipe-card">
-            <h2>{currentJob.title}</h2>
-            <h3>{currentJob.company}</h3>
-            <p>{currentJob.location}</p>
-            <p>{currentJob.description}</p>
-
-            <div className="swipe-actions">
-              <button
-                className="secondary-button"
-                type="button"
-                onClick={() => handleSwipe(false)}
-              >
-                Pass
-              </button>
-
-              <button
-                className="primary-button"
-                type="button"
-                onClick={() => handleSwipe(true)}
-              >
-                Like
-              </button>
-            </div>
-          </div>
-        )}
-      </section>
-    </main>
+        </article>
+      )}
+    </section>
   );
 }
 

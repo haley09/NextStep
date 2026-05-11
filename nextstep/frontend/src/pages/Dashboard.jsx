@@ -52,22 +52,25 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
-      <h1>Dashboard</h1>
+    <div className="card">
+      <h1 className="page-title">Dashboard</h1>
 
       {user ? (
-        <div>
-          <p>Email: {user.email}</p>
-          <p>Role: {user.role}</p>
+        <div className="dashboard-content">
+          <div className="panel">
+            <p>
+              <strong>Email:</strong> {user.email}
+            </p>
+            <p>
+              <strong>Role:</strong> {user.role}
+            </p>
+          </div>
 
           {user.role === "employer" && (
-            <div>
+            <div className="panel">
               <h2>Create Job</h2>
 
-              <form
-                onSubmit={handleJobSubmit}
-                style={{ maxWidth: "400px", display: "grid", gap: "1rem" }}
-              >
+              <form className="form-grid" onSubmit={handleJobSubmit}>
                 <input
                   type="text"
                   name="title"
@@ -106,12 +109,25 @@ export default function Dashboard() {
                 <button type="submit">Post Job</button>
               </form>
 
-              {message && <p>{message}</p>}
+              {message && (
+                <p
+                  className={
+                    message.includes("success")
+                      ? "message-success"
+                      : "message-error"
+                  }
+                >
+                  {message}
+                </p>
+              )}
             </div>
           )}
 
           {user.role === "job_seeker" && (
-            <p>Use the Jobs page to discover and swipe on available jobs.</p>
+            <div className="panel">
+              <h2>Job Seeker Dashboard</h2>
+              <p>Use the Jobs page to discover and swipe on available jobs.</p>
+            </div>
           )}
         </div>
       ) : (
