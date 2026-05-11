@@ -103,3 +103,14 @@ class CreateJobView(APIView):
 
         serializer = JobSerializer(job)
         return Response({"message": "Job created", "job": serializer.data}, status=201)
+    
+class MyPostedJobsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role != "employer":
+            return Response({"error": "Only employers can view their posted jobs"}, status=403)
+
+        jobs = Job.objects.filter(employer=request.user)
+        serializer = JobSerializer(jobs, many=True)
+        return Response(serializer.data)

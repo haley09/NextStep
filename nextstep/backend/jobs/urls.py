@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import JobListView, ResetSwipesView, SwipeView, LikedJobsView, MatchListView, MessageView, CreateJobView
+from .views import JobListView, MyPostedJobsView, ResetSwipesView, SwipeView, LikedJobsView, MatchListView, MessageView, CreateJobView
 
 urlpatterns = [
     path("", JobListView.as_view(), name="job-list"),
@@ -9,4 +9,5 @@ urlpatterns = [
     path("messages/<int:job_id>/", MessageView.as_view(), name="messages"),
     path("reset-swipes/", ResetSwipesView.as_view(), name="reset-swipes"),
     path("create/", CreateJobView.as_view(), name="create-job"),
+    path("posted/", MyPostedJobsView.as_view(), name="posted-jobs"),
 ]
