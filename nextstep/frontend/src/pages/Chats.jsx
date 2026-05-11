@@ -3,55 +3,105 @@ import { Link } from "react-router-dom";
 import api from "../services/api";
 
 export default function Chats() {
-  const [matches, setMatches] = useState([]);
-  const [message, setMessage] = useState("Loading chats...");
+  const [user, setUser] = useState(null);
+  const [items, setItems] = useState([]);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const fetchMatches = async () => {
-      const token = localStorage.getItem("access");
-
+    async function loadChats() {
       try {
-        const response = await api.get("/jobs/matches/", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const currentUser = await api.get("/auth/me/");
+        setUser(currentUser);
 
-        setMatches(response);
-        setMessage("");
+        if (currentUser.role === "employer") {
+          const applicants = await api.get("/jobs/applicants/");
+          setItems(applicants);
+        } else {
+          const matches = await api.get("/jobs/matches/");
+          setItems(matches);
+        }
       } catch (error) {
-        console.error(error.response?.data || error.message);
-        setMessage("Could not load chats.");
+        console.error(error);
+        setMessage("Failed to load conversations.");
       }
-    };
+    }
 
-    fetchMatches();
+    loadChats();
   }, []);
+
+  const isEmployer = user?.role === "employer";
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Chats</h1>
+      <h1>{isEmployer ? "Conversations" : "Chats"}</h1>
 
       {message && <p>{message}</p>}
 
-      {!message && matches.length === 0 && (
-        <p>No chats yet. Match with a job first.</p>
-      )}
+      {items.length === 0 ? (
+        <p>
+          {isEmployer
+            ? "No conversations yet. Conversations will appear when applicants like your posted jobs."
+            : "No chats yet. Match with jobs to start conversations."}
+        </p>
+      ) : (
+        <div style={{ display: "grid", gap: "1rem" }}>
+          {items.map((item) =>
+            isEmployer ? (
+              <div
+                key={item.id}
+                style={{
+                  background: "white",
+                  padding: "1rem",
+                  borderRadius: "8px",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                }}
+              >
+                <h2>{item.applicant_email}</h2>
 
-      <div className="grid gap-4 max-w-2xl">
-        {matches.map((job) => (
-          <Link
-            key={job.id}
-            to={`/chat/${job.id}`}
-            className="block bg-white rounded-xl shadow p-5 hover:shadow-md transition"
-          >
-            <h2 className="text-xl font-semibold">{job.title}</h2>
-            <p className="text-gray-700">{job.company}</p>
-            <p className="text-gray-500">{job.location}</p>
-            <p className="mt-2 text-blue-600">Open chat →</p>
-          </Link>
-        ))}
-      </div>
+                <p>
+                  <strong>Job:</strong> {item.job_title}
+                </p>
+
+                <p>
+                  <strong>Company:</strong> {item.company}
+                </p>
+
+                <p>
+                  <strong>Location:</strong> {item.location}
+                </p>
+
+                <Link to={`/chat/${item.job_id}`}>
+                  Open Conversation
+                </Link>
+              </div>
+            ) : (
+              <div
+                key={item.id}
+                style={{
+                  background: "white",
+                  padding: "1rem",
+                  borderRadius: "8px",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                }}
+              >
+                <h2>{item.title}</h2>
+
+                <p>
+                  <strong>Company:</strong> {item.company}
+                </p>
+
+                <p>
+                  <strong>Location:</strong> {item.location}
+                </p>
+
+                <Link to={`/chat/${item.id}`}>
+                  Open Chat
+                </Link>
+              </div>
+            )
+          )}
+        </div>
+      )}
     </div>
   );
 }
