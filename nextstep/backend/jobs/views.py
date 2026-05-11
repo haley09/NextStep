@@ -120,15 +120,20 @@ class EmployerApplicantsView(APIView):
 
     def get(self, request):
         if request.user.role != "employer":
-            return Response({"error": "Only employers can view applicants"}, status=403)
+            return Response(
+                {"error": "Only employers can view applicants."},
+                status=403
+            )
 
         swipes = Swipe.objects.filter(
             job__employer=request.user,
             liked=True
-        )
+        ).select_related("user", "job")
 
-        data = [
-            {
+        data = []
+
+        for swipe in swipes:
+            data.append({
                 "id": swipe.id,
                 "applicant_email": swipe.user.email,
                 "applicant_id": swipe.user.id,
@@ -136,8 +141,6 @@ class EmployerApplicantsView(APIView):
                 "job_title": swipe.job.title,
                 "company": swipe.job.company,
                 "location": swipe.job.location,
-                "created_at": swipe.job.created_at,
-            }
-            for swipe in swipes
-        ]
-        return Response({"message": "Applicants view initialized", "applicants": data})
+            })
+
+        return Response(data)
