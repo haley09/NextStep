@@ -114,3 +114,30 @@ class MyPostedJobsView(APIView):
         jobs = Job.objects.filter(employer=request.user)
         serializer = JobSerializer(jobs, many=True)
         return Response(serializer.data)
+    
+class EmployerApplicantsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role != "employer":
+            return Response({"error": "Only employers can view applicants"}, status=403)
+
+        swipes = Swipe.objects.filter(
+            job__employer=request.user,
+            liked=True
+        )
+
+        data = [
+            {
+                "id": swipe.id,
+                "applicant_email": swipe.user.email,
+                "applicant_id": swipe.user.id,
+                "job_id": swipe.job.id,
+                "job_title": swipe.job.title,
+                "company": swipe.job.company,
+                "location": swipe.job.location,
+                "created_at": swipe.job.created_at,
+            }
+            for swipe in swipes
+        ]
+        return Response({"message": "Applicants view initialized", "applicants": data})
