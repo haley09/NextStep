@@ -128,6 +128,11 @@ button:hover,
 .secondary-button {
   background: #e5e7eb;
   color: #111827;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .secondary-button:hover {
@@ -296,4 +301,88 @@ button:hover,
 
 .text-link:hover {
   text-decoration: underline;
+}
+
+.logout-button {
+  background: #f3f4f6;
+  color: #111827;
+  border: 1px solid #d1d5db;
+  padding: 0.55rem 0.85rem;
+}
+
+.logout-button:hover {
+  background: #e5e7eb;
+}
+
+.landing-page {
+  display: flex;
+  justify-content: center;
+}
+
+.landing-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 3rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  max-width: 900px;
+}
+
+.eyebrow {
+  color: #2563eb;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.landing-card h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1;
+  margin: 0 0 1rem;
+}
+
+.landing-text {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #4b5563;
+  max-width: 720px;
+}
+
+.landing-actions {
+  display: flex;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.landing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.landing-feature {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.landing-feature h2 {
+  margin-top: 0;
+}
+
+@media (max-width: 800px) {
+  .landing-card {
+    padding: 2rem;
+  }
+
+  .landing-actions {
+    flex-direction: column;
+  }
+
+  .landing-grid {
+    grid-template-columns: 1fr;
+  }
 }
