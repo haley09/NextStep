@@ -1,61 +1,101 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
 import { Link } from "react-router-dom";
+import api from "../services/api";
 
 export default function Matches() {
-  const [matches, setMatches] = useState([]);
-  const [message, setMessage] = useState("Loading matches...");
+  const [user, setUser] = useState(null);
+  const [items, setItems] = useState([]);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const fetchMatches = async () => {
-      const token = localStorage.getItem("access");
-
+    async function loadMatchesOrApplicants() {
       try {
-        const response = await api.get("/jobs/matches/", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const currentUser = await api.get("/auth/me/");
+        setUser(currentUser);
 
-        setMatches(response);
-        setMessage("");
+        if (currentUser.role === "employer") {
+          const applicants = await api.get("/jobs/applicants/");
+          setItems(applicants);
+        } else {
+          const matches = await api.get("/jobs/matches/");
+          setItems(matches);
+        }
       } catch (error) {
         console.error(error);
-        setMessage("Could not load matches.");
+        setMessage("Failed to load matches.");
       }
-    };
+    }
 
-    fetchMatches();
+    loadMatchesOrApplicants();
   }, []);
+
+  const isEmployer = user?.role === "employer";
 
   return (
     <div>
-      <h1>Your Matches</h1>
+      <h1>{isEmployer ? "Applicants" : "Matches"}</h1>
 
       {message && <p>{message}</p>}
 
-      {matches.length > 0 ? (
-        matches.map((job) => (
-          <div
-            key={job.id}
-            style={{
-              border: "1px solid #ccc",
-              borderRadius: "12px",
-              padding: "1rem",
-              marginBottom: "1rem",
-              maxWidth: "500px",
-              background: "white",
-            }}
-          >
-            <h2>{job.title}</h2>
-            <p><strong>Company:</strong> {job.company}</p>
-            <p><strong>Location:</strong> {job.location}</p>
-            <p> {job.description}</p>
-            <Link to={`/chat/${job.id}`}> Open Chat </Link>
-          </div>
-        ))
+      {items.length === 0 ? (
+        <p>
+          {isEmployer
+            ? "No applicants yet. Applicants will appear here when job seekers like your posted jobs."
+            : "No matches yet. Like jobs to create matches."}
+        </p>
       ) : (
-        !message && <p>No matches yet. Start swiping!</p>
+        <div style={{ display: "grid", gap: "1rem" }}>
+          {items.map((item) =>
+            isEmployer ? (
+              <div
+                key={item.id}
+                style={{
+                  background: "white",
+                  padding: "1rem",
+                  borderRadius: "8px",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                }}
+              >
+                <h2>{item.applicant_email}</h2>
+                <p>
+                  <strong>Applied/Liked:</strong> {item.job_title}
+                </p>
+                <p>
+                  <strong>Company:</strong> {item.company}
+                </p>
+                <p>
+                  <strong>Location:</strong> {item.location}
+                </p>
+
+                <Link to={`/chat/${item.job_id}`}>
+                  Open Conversation
+                </Link>
+              </div>
+            ) : (
+              <div
+                key={item.id}
+                style={{
+                  background: "white",
+                  padding: "1rem",
+                  borderRadius: "8px",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                }}
+              >
+                <h2>{item.title}</h2>
+                <p>
+                  <strong>Company:</strong> {item.company}
+                </p>
+                <p>
+                  <strong>Location:</strong> {item.location}
+                </p>
+
+                <Link to={`/chat/${item.id}`}>
+                  Open Chat
+                </Link>
+              </div>
+            )
+          )}
+        </div>
       )}
     </div>
   );
